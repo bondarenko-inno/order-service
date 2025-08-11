@@ -1,11 +1,24 @@
-  spring:
-    application:
-      name: order-service
+spring:
+  application:
+    name: order-service
 
-    datasource:
-      password: ${ORDER_SERVICE_POSTGRES_PASSWORD}
-      username: ${ORDER_SERVICE_POSTGRES_USER}
-      driver-class-name:
-      url: jdbc:postgresql://${ORDER_SERVICE_POSTGRES_HOST}:${ORDER_SERVICE_POSTGRES_PORT}/${ORDER_SERVICE_POSTGRES_DB}
-      hikari:
-        driver-class-name: org.postgresql.Driver
+  datasource:
+    password: ${ORDER_SERVICE_POSTGRES_PASSWORD}
+    username: ${ORDER_SERVICE_POSTGRES_USER}
+    driver-class-name:
+    url: jdbc:postgresql://${ORDER_SERVICE_POSTGRES_HOST}:${ORDER_SERVICE_POSTGRES_PORT}/${ORDER_SERVICE_POSTGRES_DB}
+    hikari:
+      driver-class-name: org.postgresql.Driver
+
+site:
+  domain:
+    url: ${environment.host}:${server.port}
+
+server:
+  port: 8081
+
+environment:
+  host: http://127.0.0.1
+
+user-service:
+  url: http://localhost:8071

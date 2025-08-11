@@ -4,6 +4,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
@@ -27,4 +28,10 @@ public class Item extends BasicEntity {
     @NotNull
     @DecimalMin("0.01")
     private Double price;
+
+    @Comment("Number of goods in stock")
+    @Column(nullable = false)
+    @NotNull
+    @Min(0)
+    private Long quantity;
 }
