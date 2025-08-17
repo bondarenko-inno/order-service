@@ -1,0 +1,7 @@
+databaseChangeLog:
+  - include:
+      file: db/changelog/01-create-orders.sql
+  - include:
+      file: db/changelog/02-create-items.sql
+  - include:
+      file: db/changelog/03-create-order-items.sql
