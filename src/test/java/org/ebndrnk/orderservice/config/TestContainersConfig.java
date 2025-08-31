@@ -22,7 +22,6 @@ public class TestContainersConfig {
                     .withPassword("test");
 
 
-
     static {
         postgres.start();
     }

@@ -103,14 +103,14 @@ class OrderControllerTest extends TestContainersConfig {
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                // Проверяем корневые поля
+
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.userId").value("test@test.com"))
                 .andExpect(jsonPath("$.orderStatus").value("PROCESSING"))
-                // Проверяем items
+
                 .andExpect(jsonPath("$.items[0].name").value("TestItem"))
                 .andExpect(jsonPath("$.items[0].price").value(15.0))
-                // Проверяем userResponse
+
                 .andExpect(jsonPath("$.userResponse.id").value(1))
                 .andExpect(jsonPath("$.userResponse.name").value("Test User"))
                 .andExpect(jsonPath("$.userResponse.email").value("test@test.com"));
@@ -121,7 +121,7 @@ class OrderControllerTest extends TestContainersConfig {
     void createOrder_insufficientQuantity() throws Exception {
         OrderRequest.OrderItemDto itemDto = new OrderRequest.OrderItemDto();
         itemDto.setItemId(item.getId());
-        itemDto.setQuantity(1000L); // больше, чем есть на складе
+        itemDto.setQuantity(1000L);
 
         OrderRequest request = new OrderRequest();
         request.setItems(List.of(itemDto));
@@ -137,7 +137,6 @@ class OrderControllerTest extends TestContainersConfig {
     @Test
     @Order(3)
     void getOrdersByStatus_success() throws Exception {
-        // создаем заказ напрямую через репозиторий
         var orderId = createSampleOrder(OrderStatus.PROCESSING);
 
         mockMvc.perform(get("/orders/by-status")

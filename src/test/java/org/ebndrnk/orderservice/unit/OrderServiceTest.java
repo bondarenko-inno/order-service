@@ -152,10 +152,8 @@ class OrderServiceTest {
         when(orderMapper.entityToResponse(order)).thenReturn(mapped);
         when(userInfoService.addUserInfoToOrderResponse(mapped, "user1")).thenReturn(withUser);
 
-        // when
         OrderResponse result = orderService.updateById(1L, req);
 
-        // then
         assertThat(result).isEqualTo(withUser);
         assertThat(order.getItems()).hasSize(1);
         assertThat(order.getItems().get(0).getQuantity()).isEqualTo(5L);
@@ -191,10 +189,8 @@ class OrderServiceTest {
         when(orderMapper.entityToResponse(order)).thenReturn(mapped);
         when(userInfoService.addUserInfoToOrderResponse(mapped, "user1")).thenReturn(withUser);
 
-        // when
         OrderResponse result = orderService.updateById(1L, req);
 
-        // then
         assertThat(result).isEqualTo(withUser);
         assertThat(order.getItems()).hasSize(1);
         assertThat(order.getItems().get(0).getQuantity()).isEqualTo(2L);
@@ -227,10 +223,8 @@ class OrderServiceTest {
         when(orderMapper.entityToResponse(order)).thenReturn(mapped);
         when(userInfoService.addUserInfoToOrderResponse(mapped, "user2")).thenReturn(withUser);
 
-        // when
         OrderResponse result = orderService.updateById(1L, req);
 
-        // then
         assertThat(result).isEqualTo(withUser);
         assertThat(order.getItems()).hasSize(1);
         OrderItem added = order.getItems().get(0);
@@ -266,10 +260,8 @@ class OrderServiceTest {
         when(orderMapper.entityToResponse(order)).thenReturn(mapped);
         when(userInfoService.addUserInfoToOrderResponse(mapped, "user3")).thenReturn(withUser);
 
-        // when
         OrderResponse result = orderService.updateById(1L, req);
 
-        // then
         assertThat(result).isEqualTo(withUser);
         assertThat(order.getItems()).isEmpty();
         verify(itemService).returnItem(3L, 2L);

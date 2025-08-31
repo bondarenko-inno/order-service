@@ -42,22 +42,19 @@ class UserClientTest extends TestContainersConfig {
                         .withStatus(200)
                         .withHeader("Content-Type", "application/json")
                         .withBody("""
-                        {
-                          "id": 1,
-                          "name": "John",
-                          "surname": "Doe",
-                          "email": "test@example.com"
-                        }
-                        """)));
+                                {
+                                  "id": 1,
+                                  "name": "John",
+                                  "surname": "Doe",
+                                  "email": "test@example.com"
+                                }
+                                """)));
 
-        // when
         UserResponse response = userClient.getUserByEmail(email);
 
-        // then
         assertThat(response).isNotNull();
         assertThat(response.email()).isEqualTo(email);
 
-        // ✅ Верная проверка: проверяем query param
         verify(getRequestedFor(urlPathEqualTo("/api/users/by-email"))
                 .withQueryParam("email", equalTo(email)));
     }

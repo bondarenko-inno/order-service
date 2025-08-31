@@ -28,17 +28,14 @@ class ItemServiceTest {
 
     @Test
     void getItemById_shouldReturnItem_whenExists() {
-        // given
         Item item = new Item();
         item.setId(1L);
         item.setQuantity(10L);
 
         when(itemRepository.findById(1L)).thenReturn(Optional.of(item));
 
-        // when
         Item result = itemService.getItemById(1L);
 
-        // then
         assertThat(result).isEqualTo(item);
         verify(itemRepository, times(1)).findById(1L);
     }
