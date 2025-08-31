@@ -1,0 +1,15 @@
+spring:
+  liquibase:
+    enabled: true
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+logging:
+  level:
+    org:
+      springframework: INFO
+
+
+secret:
+  key: test-secret-for-tests-test-secret-for-tests

@@ -2,6 +2,7 @@ package org.ebndrnk.orderservice.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.ebndrnk.orderservice.exception.ItemUpdateException;
 import org.ebndrnk.orderservice.exception.OrderNotFoundException;
 import org.ebndrnk.orderservice.mapper.OrderMapper;
 import org.ebndrnk.orderservice.model.dto.OrderRequest;
@@ -12,6 +13,7 @@ import org.ebndrnk.orderservice.model.entity.Order;
 import org.ebndrnk.orderservice.model.entity.OrderItem;
 import org.ebndrnk.orderservice.model.entity.OrderStatus;
 import org.ebndrnk.orderservice.repository.OrderRepository;
+import org.ebndrnk.orderservice.util.JwtParser;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,17 +31,21 @@ public class OrderService {
     private final ItemService itemService;
     private final OrderMapper orderMapper;
     private final UserInfoService userInfoService;
+    private final JwtParser jwtParser;
 
     @Transactional
     public OrderResponse createOrder(OrderRequest request) {
         Order order = new Order();
-        order.setUserId(request.getUserId());
+
+        String email = jwtParser.getEmailFromToken();
+
+        order.setUserId(email);
         order.setStatus(OrderStatus.PROCESSING);
 
         addOrderItems(order, request.getItems());
 
         Order savedOrder = orderRepository.save(order);
-        return userInfoService.addUserInfoToOrderResponse(orderMapper.entityToResponse(savedOrder), request.getUserId()); //TODO email из запроса
+        return userInfoService.addUserInfoToOrderResponse(orderMapper.entityToResponse(savedOrder), email);
     }
 
     public OrderResponse getById(Long orderId) {
@@ -58,6 +64,9 @@ public class OrderService {
 
     public List<OrderResponse> getByStatuses(List<OrderStatus> statuses) {
         List<Order> orders = orderRepository.findAllByStatusIn(statuses);
+        if(orders.isEmpty()) {
+            throw new OrderNotFoundException("No orders found for statuses: " + statuses);
+        }
         return orders.stream()
                 .map(orderMapper::entityToResponse)
                 .map(orderResponse -> userInfoService.addUserInfoToOrderResponse(orderResponse, orderResponse.getUserId()))
@@ -66,8 +75,6 @@ public class OrderService {
 
     @Transactional
     public void deleteById(Long orderId) {
-        System.out.println(orderId);
-
         Order order  = orderRepository.findById(orderId)
                 .orElseThrow(() -> new OrderNotFoundException("Order with id: " + orderId + " not found"));
 
@@ -108,18 +115,26 @@ public class OrderService {
             return userInfoService.addUserInfoToOrderResponse(orderMapper.entityToResponse(savedOrder), order.getUserId());
         } catch (Exception e) {
             log.error("Failed to update order with id {}", orderId, e);
-            throw e;
+            throw new ItemUpdateException("Error while updating order with id: " + orderId);
         }
     }
 
+    /**
+     * Utility class responsible for synchronizing order items with a new list of items from request.
+     * It updates quantities of existing items, adds new items, and removes items that are no longer present.
+     * During the process it also calls ItemService to reserve or return stock quantities accordingly.
+     */
     @RequiredArgsConstructor
     private static class OrderItemsUpdater {
         private final Order order;
         private final ItemService itemService;
 
+        /**
+         * Main entry point: updates the order items list according to the provided new items.
+         */
         public void update(List<OrderRequest.OrderItemDto> newItems) {
             if (newItems == null) {
-                return;
+                return; // nothing to update
             }
 
             List<OrderItem> oldItems = new ArrayList<>(order.getItems());
@@ -129,11 +144,19 @@ public class OrderService {
             removeDeletedItems(oldItemsMap);
         }
 
+        /**
+         * Creates a map of existing order items keyed by itemId for quick lookup.
+         */
         private Map<Long, OrderItem> mapOrderItemsByItemId(List<OrderItem> items) {
             return items.stream()
                     .collect(Collectors.toMap(oi -> oi.getItem().getId(), oi -> oi));
         }
 
+        /**
+         * Handles both updating existing items and adding new ones.
+         * - If item already exists: adjust its quantity (reserve or return difference).
+         * - If it's new: reserve the full quantity and add it to the order.
+         */
         private void processExistingAndUpdatedItems(Map<Long, OrderItem> oldItemsMap, List<OrderRequest.OrderItemDto> newItems) {
             for (OrderRequest.OrderItemDto newItem : newItems) {
                 validateQuantity(newItem.getQuantity());
@@ -149,12 +172,19 @@ public class OrderService {
             }
         }
 
+        /**
+         * Ensures that provided quantity is valid (> 0).
+         */
         private void validateQuantity(Long quantity) {
             if (quantity == null || quantity <= 0) {
                 throw new IllegalArgumentException("Quantity must be positive");
             }
         }
 
+        /**
+         * Adjusts quantity for an item that already exists in the order.
+         * Reserves additional stock if increased, or returns stock if decreased.
+         */
         private void adjustQuantityForExistingItem(OrderRequest.OrderItemDto newItem, OrderItem oldItem) {
             long oldQty = oldItem.getQuantity();
             long newQty = newItem.getQuantity();
@@ -167,6 +197,9 @@ public class OrderService {
             oldItem.setQuantity(newQty);
         }
 
+        /**
+         * Adds a completely new item to the order with full reservation of stock.
+         */
         private void addNewOrderItem(OrderRequest.OrderItemDto newItem) {
             itemService.reserveItem(newItem.getItemId(), newItem.getQuantity());
 
@@ -177,6 +210,10 @@ public class OrderService {
             order.getItems().add(orderItem);
         }
 
+        /**
+         * Removes items that were not included in the new request anymore.
+         * Returns their quantities back to the stock.
+         */
         private void removeDeletedItems(Map<Long, OrderItem> oldItemsMap) {
             List<OrderItem> toRemove = new ArrayList<>(oldItemsMap.values());
 
@@ -186,4 +223,5 @@ public class OrderService {
             }
         }
     }
+
 }

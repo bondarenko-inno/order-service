@@ -20,7 +20,6 @@ public class ItemService {
     }
 
 
-
     public Item reserveItem(Long itemId, Long requestedQty) {
         Item item = getItemById(itemId);
 
