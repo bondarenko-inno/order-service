@@ -4,7 +4,7 @@ import io.jsonwebtoken.Claims;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.ebndrnk.common.filter.JwtTokenValidator;
+import org.ebndrnk.common.security.filter.JwtTokenValidator;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.annotation.RequestScope;

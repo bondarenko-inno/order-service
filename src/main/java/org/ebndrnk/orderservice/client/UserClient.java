@@ -8,6 +8,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 @FeignClient(name = "user-service", url = "${user-service.url}")
 public interface UserClient {
 
-    @GetMapping("/api/users/by-email")
+    @GetMapping("/users/by-email")
     UserResponse getUserByEmail(@RequestParam String email);
 }

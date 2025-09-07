@@ -36,7 +36,7 @@ class UserClientTest extends TestContainersConfig {
     void getUserByEmail_shouldReturnMockedUser() {
         String email = "test@example.com";
 
-        stubFor(get(urlPathEqualTo("/api/users/by-email"))
+        stubFor(get(urlPathEqualTo("/users/by-email"))
                 .withQueryParam("email", equalTo(email))
                 .willReturn(aResponse()
                         .withStatus(200)
@@ -55,7 +55,7 @@ class UserClientTest extends TestContainersConfig {
         assertThat(response).isNotNull();
         assertThat(response.email()).isEqualTo(email);
 
-        verify(getRequestedFor(urlPathEqualTo("/api/users/by-email"))
+        verify(getRequestedFor(urlPathEqualTo("/users/by-email"))
                 .withQueryParam("email", equalTo(email)));
     }
 

@@ -2,7 +2,7 @@ package org.ebndrnk.orderservice.config;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import org.ebndrnk.common.filter.JwtTokenValidator;
+import org.ebndrnk.common.security.filter.JwtTokenValidator;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;

@@ -62,7 +62,7 @@ class OrderControllerTest extends TestContainersConfig {
 
     @BeforeEach
     void setUpMocks() {
-        stubFor(WireMock.get(urlPathEqualTo("/api/users/by-email"))
+        stubFor(WireMock.get(urlPathEqualTo("/users/by-email"))
                 .withQueryParam("email", equalTo("test@test.com"))
                 .willReturn(aResponse()
                         .withHeader("Content-Type", "application/json")

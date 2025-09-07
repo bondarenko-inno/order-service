@@ -9,6 +9,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
+import org.ebndrnk.common.common.entity.BasicEntity;
 import org.hibernate.annotations.Comment;
 
 @Entity
