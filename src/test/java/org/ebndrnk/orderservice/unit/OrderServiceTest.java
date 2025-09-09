@@ -2,6 +2,7 @@ package org.ebndrnk.orderservice.unit;
 
 import org.ebndrnk.orderservice.exception.ItemUpdateException;
 import org.ebndrnk.orderservice.exception.OrderNotFoundException;
+import org.ebndrnk.orderservice.kafka.OrderCreatedPublisher;
 import org.ebndrnk.orderservice.mapper.OrderMapper;
 import org.ebndrnk.orderservice.model.dto.OrderRequest;
 import org.ebndrnk.orderservice.model.dto.OrderResponse;
@@ -37,6 +38,7 @@ class OrderServiceTest {
     @Mock private OrderMapper orderMapper;
     @Mock private UserInfoService userInfoService;
     @Mock private JwtParser jwtParser;
+    @Mock private OrderCreatedPublisher orderCreatedPublisher;
 
     @InjectMocks private OrderService orderService;
 

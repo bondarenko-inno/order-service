@@ -12,7 +12,7 @@ create table IF NOT EXISTS orders
     status       varchar(255)                           not null
     constraint orders_status_check
     check ((status)::text = ANY
-((ARRAY ['NEW'::character varying, 'PROCESSING'::character varying, 'SHIPPED'::character varying, 'DELIVERED'::character varying, 'CANCELLED'::character varying])::text[])),
+((ARRAY ['PENDING'::character varying, 'FAILED'::character varying, 'SUCCESS'::character varying])::text[])),
     user_id      varchar(255)                                 not null
     );
 

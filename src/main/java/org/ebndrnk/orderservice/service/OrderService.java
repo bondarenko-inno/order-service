@@ -4,7 +4,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.ebndrnk.orderservice.exception.ItemUpdateException;
 import org.ebndrnk.orderservice.exception.OrderNotFoundException;
+import org.ebndrnk.orderservice.kafka.OrderCreatedPublisher;
+import org.ebndrnk.orderservice.kafka.dto.PaymentResponse;
 import org.ebndrnk.orderservice.mapper.OrderMapper;
+import org.ebndrnk.orderservice.mapper.StatusMapper;
 import org.ebndrnk.orderservice.model.dto.OrderRequest;
 import org.ebndrnk.orderservice.model.dto.OrderResponse;
 import org.ebndrnk.orderservice.model.dto.UpdateOrderRequest;
@@ -17,6 +20,7 @@ import org.ebndrnk.orderservice.util.JwtParser;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +36,8 @@ public class OrderService {
     private final OrderMapper orderMapper;
     private final UserInfoService userInfoService;
     private final JwtParser jwtParser;
+    private final OrderCreatedPublisher orderCreatedPublisher;
+    private final StatusMapper statusMapper;
 
     @Transactional
     public OrderResponse createOrder(OrderRequest request) {
@@ -40,12 +46,32 @@ public class OrderService {
         String email = jwtParser.getEmailFromToken();
 
         order.setUserId(email);
-        order.setStatus(OrderStatus.PROCESSING);
+        order.setStatus(OrderStatus.PENDING);
 
         addOrderItems(order, request.getItems());
 
         Order savedOrder = orderRepository.save(order);
+
+        orderCreatedPublisher.publishOrderCreated(savedOrder, getAmount(savedOrder));
         return userInfoService.addUserInfoToOrderResponse(orderMapper.entityToResponse(savedOrder), email);
+    }
+
+
+    public void setOrderStatus(PaymentResponse paymentResponse) {
+        Order order = orderRepository.findById(Long.valueOf(paymentResponse.orderId()))
+                .orElseThrow(() -> new OrderNotFoundException("Order not found"));
+
+        OrderStatus orderStatus = statusMapper.toOrderStatus(paymentResponse.status());
+
+        if(orderStatus == OrderStatus.FAILED) {
+            order.getItems()
+                    .forEach(orderItem -> {
+                        itemService.returnItem(orderItem.getItem().getId(), orderItem.getItem().getQuantity());
+                    });
+        }
+
+        order.setStatus(orderStatus);
+        orderRepository.save(order);
     }
 
     public OrderResponse getById(Long orderId) {
@@ -117,6 +143,14 @@ public class OrderService {
             log.error("Failed to update order with id {}", orderId, e);
             throw new ItemUpdateException("Error while updating order with id: " + orderId);
         }
+    }
+
+    private BigDecimal getAmount(Order savedOrder) {
+        BigDecimal amount = BigDecimal.ZERO;
+        for(OrderItem orderItem : savedOrder.getItems()) {
+            amount = amount.add(BigDecimal.valueOf(orderItem.getQuantity()*orderItem.getItem().getPrice()));
+        }
+        return amount;
     }
 
     /**
@@ -222,6 +256,7 @@ public class OrderService {
                 order.getItems().remove(itemToRemove);
             }
         }
+
     }
 
 }

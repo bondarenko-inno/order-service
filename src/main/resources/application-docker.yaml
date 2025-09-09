@@ -10,6 +10,8 @@ spring:
 
 environment:
   host: http://127.0.0.1
+  kafka:
+    address: ${AUTH_SERVICE_KAFKA_HOST}:${AUTH_SERVICE_KAFKA_PORT}
 
 user-service:
   url: http://user-service:8071

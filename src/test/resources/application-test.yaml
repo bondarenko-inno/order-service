@@ -1,4 +1,6 @@
 spring:
+  kafka:
+    bootstrap-servers: none
   liquibase:
     enabled: true
 

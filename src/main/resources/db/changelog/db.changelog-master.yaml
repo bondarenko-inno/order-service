@@ -5,3 +5,5 @@ databaseChangeLog:
       file: db/changelog/02-create-items.sql
   - include:
       file: db/changelog/03-create-order-items.sql
+  - include:
+      file: db/changelog/04-initialize-items-table.sql

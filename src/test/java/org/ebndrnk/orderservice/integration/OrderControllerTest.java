@@ -3,6 +3,8 @@ package org.ebndrnk.orderservice.integration;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import org.ebndrnk.orderservice.config.TestContainersConfig;
+import org.ebndrnk.orderservice.kafka.OrderCreatedPublisher;
+import org.ebndrnk.orderservice.kafka.OrderProcessListener;
 import org.ebndrnk.orderservice.model.dto.OrderRequest;
 import org.ebndrnk.orderservice.model.entity.Item;
 import org.ebndrnk.orderservice.model.entity.OrderItem;
@@ -20,15 +22,16 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -53,6 +56,12 @@ class OrderControllerTest extends TestContainersConfig {
 
     @Autowired
     ItemRepository itemRepository;
+
+    @MockitoBean
+    OrderCreatedPublisher orderCreatedPublisher;
+
+    @MockitoBean
+    OrderProcessListener orderProcessListener;
 
     private Item item;
 
@@ -106,7 +115,7 @@ class OrderControllerTest extends TestContainersConfig {
 
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.userId").value("test@test.com"))
-                .andExpect(jsonPath("$.orderStatus").value("PROCESSING"))
+                .andExpect(jsonPath("$.orderStatus").value("PENDING"))
 
                 .andExpect(jsonPath("$.items[0].name").value("TestItem"))
                 .andExpect(jsonPath("$.items[0].price").value(15.0))
@@ -137,10 +146,10 @@ class OrderControllerTest extends TestContainersConfig {
     @Test
     @Order(3)
     void getOrdersByStatus_success() throws Exception {
-        var orderId = createSampleOrder(OrderStatus.PROCESSING);
+        var orderId = createSampleOrder(OrderStatus.PENDING);
 
         mockMvc.perform(get("/orders/by-status")
-                        .param("statuses", "PROCESSING")
+                        .param("statuses", "PENDING")
                         .header("Authorization", TEST_TOKEN))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(1))
@@ -151,7 +160,7 @@ class OrderControllerTest extends TestContainersConfig {
     @Order(4)
     void getOrdersByStatus_notFound() throws Exception {
         mockMvc.perform(get("/orders/by-status")
-                        .param("statuses", "CLOSED")
+                        .param("statuses", "FAILED")
                         .header("Authorization", TEST_TOKEN))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.status").value(404));
