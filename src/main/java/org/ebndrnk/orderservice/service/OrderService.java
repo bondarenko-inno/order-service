@@ -64,7 +64,7 @@ public class OrderService {
         }
     }
 
-
+    @Transactional
     public void setOrderStatus(PaymentResponse paymentResponse) {
         Order order = orderRepository.findById(Long.valueOf(paymentResponse.orderId()))
                 .orElseThrow(() -> new OrderNotFoundException("Order not found"));
