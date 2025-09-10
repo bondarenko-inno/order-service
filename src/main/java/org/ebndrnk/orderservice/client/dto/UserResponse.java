@@ -14,7 +14,6 @@ import java.time.LocalDateTime;
  */
 @Schema(description = "Response containing user information.")
 public record UserResponse(
-
         @Schema(description = "Unique identifier of the user.", example = "10")
         Long id,
 
@@ -28,7 +27,9 @@ public record UserResponse(
         String email,
 
         @Schema(description = "User's date of birth. \n Format ISO 8601: YYYY-MM-DD hh:mm:ss.000000", example = "1990-05-15T00:00:00")
-        LocalDateTime birthDate
+        LocalDateTime birthDate,
+
+        Boolean isCardAvailable
 
 ) {
 }

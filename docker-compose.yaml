@@ -15,22 +15,22 @@ services:
       - pgdata:/var/lib/postgresql/data
 
 
-  order-service:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: order-service
-    ports:
-      - "8081:8081"
-    environment:
-      - ORDER_SERVICE_POSTGRES_USER=${ORDER_SERVICE_POSTGRES_USER}
-      - ORDER_SERVICE_POSTGRES_PASSWORD=${ORDER_SERVICE_POSTGRES_PASSWORD}
-      - ORDER_SERVICE_POSTGRES_DB=${ORDER_SERVICE_POSTGRES_DB}
-      - ORDER_SERVICE_POSTGRES_HOST=${ORDER_SERVICE_POSTGRES_HOST}
-      - ORDER_SERVICE_POSTGRES_PORT=${ORDER_SERVICE_POSTGRES_PORT}
-      - SECRET_KEY=${SECRET_KEY}
-    depends_on:
-      - order-service-db
+#  order-service:
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
+#    container_name: order-service
+#    ports:
+#      - "8081:8081"
+#    environment:
+#      - ORDER_SERVICE_POSTGRES_USER=${ORDER_SERVICE_POSTGRES_USER}
+#      - ORDER_SERVICE_POSTGRES_PASSWORD=${ORDER_SERVICE_POSTGRES_PASSWORD}
+#      - ORDER_SERVICE_POSTGRES_DB=${ORDER_SERVICE_POSTGRES_DB}
+#      - ORDER_SERVICE_POSTGRES_HOST=${ORDER_SERVICE_POSTGRES_HOST}
+#      - ORDER_SERVICE_POSTGRES_PORT=${ORDER_SERVICE_POSTGRES_PORT}
+#      - SECRET_KEY=${SECRET_KEY}
+#    depends_on:
+#      - order-service-db
 
 
 volumes:

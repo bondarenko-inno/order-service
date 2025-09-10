@@ -2,6 +2,8 @@ package org.ebndrnk.orderservice.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.ebndrnk.orderservice.client.dto.UserResponse;
+import org.ebndrnk.orderservice.exception.CardNotFoundException;
 import org.ebndrnk.orderservice.exception.ItemUpdateException;
 import org.ebndrnk.orderservice.exception.OrderNotFoundException;
 import org.ebndrnk.orderservice.kafka.OrderCreatedPublisher;
@@ -52,8 +54,14 @@ public class OrderService {
 
         Order savedOrder = orderRepository.save(order);
 
-        orderCreatedPublisher.publishOrderCreated(savedOrder, getAmount(savedOrder));
-        return userInfoService.addUserInfoToOrderResponse(orderMapper.entityToResponse(savedOrder), email);
+        OrderResponse orderResponse = userInfoService.addUserInfoToOrderResponse(orderMapper.entityToResponse(savedOrder), email);
+
+        if(orderResponse.getUserResponse().isCardAvailable()){
+            orderCreatedPublisher.publishOrderCreated(savedOrder, getAmount(savedOrder));
+            return orderResponse;
+        } else {
+            throw new CardNotFoundException("User should have a card for this action");
+        }
     }
 
 
