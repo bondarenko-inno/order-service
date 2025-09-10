@@ -28,7 +28,7 @@ class UserInfoServiceTest {
     void addUserInfoToOrderResponse_shouldAddUserResponseFromClient() {
         String email = "test@example.com";
         OrderResponse orderResponse = new OrderResponse();
-        UserResponse expectedUserResponse = new UserResponse(1L, "John", "Doe", "test@example.com", LocalDateTime.now());
+        UserResponse expectedUserResponse = new UserResponse(1L, "John", "Doe", "test@example.com", LocalDateTime.now(), false);
 
         when(userClient.getUserByEmail(email)).thenReturn(expectedUserResponse);
 

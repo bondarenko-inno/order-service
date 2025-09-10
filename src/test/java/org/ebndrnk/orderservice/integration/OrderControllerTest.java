@@ -75,7 +75,7 @@ class OrderControllerTest extends TestContainersConfig {
                 .withQueryParam("email", equalTo("test@test.com"))
                 .willReturn(aResponse()
                         .withHeader("Content-Type", "application/json")
-                        .withBody("{\"id\": 1, \"email\": \"test@test.com\", \"name\": \"Test User\"}")
+                        .withBody("{\"id\": 1, \"email\": \"test@test.com\", \"name\": \"Test User\", \"isCardAvailable\": true}")
                         .withStatus(200)));
     }
 

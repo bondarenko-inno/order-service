@@ -1,5 +1,6 @@
 package org.ebndrnk.orderservice.unit;
 
+import org.ebndrnk.orderservice.client.dto.UserResponse;
 import org.ebndrnk.orderservice.exception.ItemUpdateException;
 import org.ebndrnk.orderservice.exception.OrderNotFoundException;
 import org.ebndrnk.orderservice.kafka.OrderCreatedPublisher;
@@ -21,6 +22,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -59,8 +61,10 @@ class OrderServiceTest {
         Order saved = new Order();
         saved.setUserId("test@example.com");
 
+
         OrderResponse mapped = new OrderResponse();
         OrderResponse finalResp = new OrderResponse();
+        finalResp.setUserResponse(new UserResponse(1L, "name", "surname", "email@email.com", LocalDateTime.now(), true));
 
         when(jwtParser.getEmailFromToken()).thenReturn("test@example.com");
         when(itemService.reserveItem(1L, 2L)).thenReturn(new Item());
