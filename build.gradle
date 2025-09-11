@@ -50,7 +50,7 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok'
 
     // Custom library
-    implementation 'com.github.bondarenko-inno:common-lib:2.0.0'
+    implementation 'com.github.bondarenko-inno:common-lib:2.0.2'
 
     // Test dependencies
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
@@ -67,6 +67,9 @@ dependencies {
 
     //kafka
     implementation 'org.springframework.kafka:spring-kafka'
+
+    // --- Actuator
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
 
 }
 
