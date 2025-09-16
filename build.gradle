@@ -50,7 +50,7 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok'
 
     // Custom library
-    implementation 'com.github.bondarenko-inno:common-lib:2.0.3'
+    implementation 'com.github.bondarenko-inno:common-lib:2.0.4'
 
     // Test dependencies
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
