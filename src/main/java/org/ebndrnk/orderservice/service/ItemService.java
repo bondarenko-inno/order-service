@@ -4,11 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.ebndrnk.orderservice.exception.ItemNotFoundException;
 import org.ebndrnk.orderservice.exception.NotEnoughStock;
 import org.ebndrnk.orderservice.mapper.ItemMapper;
-import org.ebndrnk.orderservice.model.dto.ItemDto;
 import org.ebndrnk.orderservice.model.dto.ItemResponse;
 import org.ebndrnk.orderservice.model.entity.Item;
 import org.ebndrnk.orderservice.repository.ItemRepository;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

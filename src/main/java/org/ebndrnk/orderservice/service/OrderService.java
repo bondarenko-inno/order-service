@@ -12,6 +12,7 @@ import org.ebndrnk.orderservice.mapper.OrderMapper;
 import org.ebndrnk.orderservice.mapper.StatusMapper;
 import org.ebndrnk.orderservice.model.dto.OrderRequest;
 import org.ebndrnk.orderservice.model.dto.OrderResponse;
+import org.ebndrnk.orderservice.model.dto.OrdersHistoryResponse;
 import org.ebndrnk.orderservice.model.dto.UpdateOrderRequest;
 import org.ebndrnk.orderservice.model.entity.Item;
 import org.ebndrnk.orderservice.model.entity.Order;
@@ -73,9 +74,7 @@ public class OrderService {
 
         if(orderStatus == OrderStatus.FAILED) {
             order.getItems()
-                    .forEach(orderItem -> {
-                        itemService.returnItem(orderItem.getItem().getId(), orderItem.getItem().getQuantity());
-                    });
+                    .forEach(orderItem -> itemService.returnItem(orderItem.getItem().getId(), orderItem.getQuantity()));
         }
 
         order.setStatus(orderStatus);
@@ -159,6 +158,17 @@ public class OrderService {
             amount = amount.add(BigDecimal.valueOf(orderItem.getQuantity()*orderItem.getItem().getPrice()));
         }
         return amount;
+    }
+
+    public List<OrdersHistoryResponse> getByUserEmail(String email) {
+        List<Order> orders = orderRepository.findByUserId(email);
+
+        if(orders.isEmpty()) {
+            throw new OrderNotFoundException("No orders found for email: " + email);
+        }
+
+        return orders.stream().map(orderMapper::entityToHistoryResponse).toList();
+
     }
 
     /**

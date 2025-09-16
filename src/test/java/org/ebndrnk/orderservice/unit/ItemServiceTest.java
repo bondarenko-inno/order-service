@@ -2,6 +2,7 @@ package org.ebndrnk.orderservice.unit;
 
 import org.ebndrnk.orderservice.exception.ItemNotFoundException;
 import org.ebndrnk.orderservice.exception.NotEnoughStock;
+import org.ebndrnk.orderservice.mapper.ItemMapper;
 import org.ebndrnk.orderservice.model.entity.Item;
 import org.ebndrnk.orderservice.repository.ItemRepository;
 import org.ebndrnk.orderservice.service.ItemService;
@@ -19,11 +20,12 @@ class ItemServiceTest {
 
     private ItemRepository itemRepository;
     private ItemService itemService;
+    private ItemMapper itemMapper;
 
     @BeforeEach
     void setUp() {
         itemRepository = Mockito.mock(ItemRepository.class);
-        itemService = new ItemService(itemRepository);
+        itemService = new ItemService(itemRepository, itemMapper);
     }
 
     @Test
