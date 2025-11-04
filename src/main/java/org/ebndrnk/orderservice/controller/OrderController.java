@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.ebndrnk.orderservice.model.dto.OrderRequest;
 import org.ebndrnk.orderservice.model.dto.OrderResponse;
+import org.ebndrnk.orderservice.model.dto.OrdersHistoryResponse;
 import org.ebndrnk.orderservice.model.dto.UpdateOrderRequest;
 import org.ebndrnk.orderservice.model.entity.OrderStatus;
 import org.ebndrnk.orderservice.service.OrderService;
@@ -59,5 +60,10 @@ public class OrderController {
     public ResponseEntity<Void> deleteOrderById(@PathVariable Long orderId) {
         orderService.deleteById(orderId);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/by-user")
+    public ResponseEntity<List<OrdersHistoryResponse>> getOrdersByUserId(@RequestParam String email) {
+        return ResponseEntity.ok(orderService.getByUserEmail(email));
     }
 }

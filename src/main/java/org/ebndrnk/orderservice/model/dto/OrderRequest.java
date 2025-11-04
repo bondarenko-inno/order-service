@@ -11,9 +11,6 @@ import java.util.List;
 @Setter
 public class OrderRequest {
 
-    @NotNull
-    private String userId;
-
     @NotEmpty
     private List<OrderItemDto> items;
 

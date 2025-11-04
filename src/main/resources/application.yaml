@@ -10,6 +10,19 @@ spring:
     hikari:
       driver-class-name: org.postgresql.Driver
 
+  kafka:
+    bootstrap-servers: ${environment.kafka.address}
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    consumer:
+      group-id: payment-service-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: '*'
+
 site:
   domain:
     url: ${environment.host}:${server.port}
@@ -19,6 +32,19 @@ server:
 
 environment:
   host: http://127.0.0.1
+  kafka:
+    address: localhost:9092
 
 user-service:
   url: http://localhost:8071
+
+
+management:
+  endpoint:
+    health:
+      probes:
+        enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: health

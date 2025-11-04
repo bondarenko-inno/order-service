@@ -11,7 +11,7 @@ import java.util.List;
 @Getter
 @Setter
 public class OrderResponse{
-    private Long id;
+    private String id;
     private String userId;
     private OrderStatus orderStatus;
     private List<ItemDto> items;
